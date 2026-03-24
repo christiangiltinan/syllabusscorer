@@ -131,3 +131,71 @@ body {
   padding: 4px 12px; border-radius: 30px;
   font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
 }
+
+.slogan-kicker {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--brand-green);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+/* Practice Merit Section */
+.practice-merit {
+  padding: 100px 0;
+  background: var(--bg-secondary);
+  text-align: center;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.practice-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.practice-merit h2 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 24px;
+  letter-spacing: -1.5px;
+}
+
+.practice-merit p {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.practice-merit strong {
+  color: var(--brand-green);
+}
+
+.marker-title {
+  font-family: 'Permanent Marker', cursive;
+  position: relative;
+  display: inline-block;
+  padding: 0 10px;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.marker-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100%;
+  height: 12px;
+  background: var(--brand-green);
+  opacity: 0.35;
+  z-index: -1;
+  transform: rotate(-1.2deg);
+  border-radius: 4px;
+}
+

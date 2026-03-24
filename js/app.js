@@ -120,7 +120,16 @@ const SEED_RESOURCES = [
   { id: 'res3', name: 'JC English (OL) SEC Sample Paper', type: 'Past Paper', system: 'Junior Cycle', subject: 'english', level: 'OL', topic: 'Comparative Studies', chapter: 'Drama', url: '#' },
   { id: 'res4', name: 'LC Physics (HL) Particle Physics Summary', type: 'Revision Note', system: 'Leaving Cert', subject: 'physics', level: 'HL', topic: 'Particle Physics', chapter: 'Modern Physics', url: '#' },
   { id: 'res5', name: 'JC History (CL) Modern Ireland Notes', type: 'Revision Note', system: 'Junior Cycle', subject: 'history', level: 'CL', topic: 'Plantations', chapter: 'Early Modern Ireland', url: '#' },
-  { id: 'res6', name: 'LC Maths (HL) Calculus Revision Note', type: 'Revision Note', system: 'Leaving Cert', subject: 'mathematics', level: 'HL', topic: 'Differentiation', chapter: 'Calculus', url: '#' }
+  { id: 'res6', name: 'LC Maths (HL) Calculus Revision Note', type: 'Revision Note', system: 'Leaving Cert', subject: 'mathematics', level: 'HL', topic: 'Differentiation', chapter: 'Calculus', url: '#' },
+  // Irish Past Papers
+  { id: 'res7', name: 'JC Irish (HL) SEC 2014 Paper 1', type: 'Past Paper', system: 'Junior Cycle', subject: 'gaeilge', level: 'HL', topic: 'Official SEC Paper', chapter: 'Past Paper', url: 'assets/papers/higherlevel.p1.2014.pdf' },
+  { id: 'res8', name: 'JC Irish (HL) SEC 2014 Paper 2', type: 'Past Paper', system: 'Junior Cycle', subject: 'gaeilge', level: 'HL', topic: 'Official SEC Paper', chapter: 'Past Paper', url: 'assets/papers/higherlevel.p2.2014.pdf' },
+  { id: 'res9', name: 'JC Irish (OL) SEC 2014', type: 'Past Paper', system: 'Junior Cycle', subject: 'gaeilge', level: 'OL', topic: 'Official SEC Paper', chapter: 'Past Paper', url: 'assets/papers/ordinarylevel.2014.pdf' },
+  { id: 'res10', name: 'JC Irish (FL) SEC 2014', type: 'Past Paper', system: 'Junior Cycle', subject: 'gaeilge', level: 'FL', topic: 'Official SEC Paper', chapter: 'Past Paper', url: 'assets/papers/foundationlevel.2014.pdf' },
+  { id: 'res11', name: 'JC Irish (HL) SEC 2013 Paper 1', type: 'Past Paper', system: 'Junior Cycle', subject: 'gaeilge', level: 'HL', topic: 'Official SEC Paper', chapter: 'Past Paper', url: 'assets/papers/higherlevel.p1.2013.pdf' },
+  { id: 'res12', name: 'JC Irish (HL) SEC 2013 Paper 2', type: 'Past Paper', system: 'Junior Cycle', subject: 'gaeilge', level: 'HL', topic: 'Official SEC Paper', chapter: 'Past Paper', url: 'assets/papers/higherlevel.p2.2013.pdf' },
+  { id: 'res13', name: 'JC Irish (OL) SEC 2013', type: 'Past Paper', system: 'Junior Cycle', subject: 'gaeilge', level: 'OL', topic: 'Official SEC Paper', chapter: 'Past Paper', url: 'assets/papers/ordinarylevel.2013.pdf' },
+  { id: 'res14', name: 'JC Irish (FL) SEC 2013', type: 'Past Paper', system: 'Junior Cycle', subject: 'gaeilge', level: 'FL', topic: 'Official SEC Paper', chapter: 'Past Paper', url: 'assets/papers/foundationlevel.2013.pdf' }
 ];
 
 const AppData = {
@@ -141,7 +150,14 @@ const AppData = {
       this.aiUsage = parsed.aiUsage || { count: 0, resetDate: Date.now() + (7 * 24 * 60 * 60 * 1000) };
       this.isPremium = parsed.isPremium || false;
       this.settings = parsed.settings || this.settings;
-      this.resources = parsed.resources || SEED_RESOURCES;
+      this.resources = parsed.resources || [];
+      
+      // Ensure all SEED_RESOURCES are present
+      SEED_RESOURCES.forEach(sr => {
+        if (!this.resources.find(r => r.id === sr.id)) {
+          this.resources.push(sr);
+        }
+      });
       this.resourceUsage = parsed.resourceUsage || { count: 0, date: new Date().toDateString() };
       
       // Reset daily usage

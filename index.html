@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Outfit:wght@400;600;900&family=Permanent+Marker&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Outfit', sans-serif; padding-top: 72px; }
 
@@ -59,10 +59,11 @@
         /* Subject Box Grid */
         .subject-explore { padding: 120px 0; background: #fff; border-top: 1px solid var(--border-light); }
         .grid-compact {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            display: flex; flex-wrap: wrap; justify-content: center;
             gap: 24px; max-width: 1240px; margin: 0 auto; padding: 0 24px;
         }
         .subject-box {
+            flex: 1 1 340px; max-width: 400px;
             padding: 40px; background: var(--bg-secondary); border-radius: 20px;
             transition: all 0.4s ease; border: 1px solid transparent;
         }
@@ -131,22 +132,29 @@
         <div class="floating-element sym-3">⚛ (Atom)</div>
         <div class="floating-element sym-4">Ω (Ohm)</div>
         <div class="fact-1 floating-element">Mitochondria is the powerhouse of the cell. (LC Bio)</div>
-        <div class="fact-2 floating-element">Irish State Exams: Junior Cycle & Leaving Cert.</div>
+        <div class="fact-2 floating-element">State Exams: Junior Cycle & Leaving Cert.</div>
 
         <div class="hero-content">
             <h1>Master <span class="underline-target">Topical</span> Past Papers & Revision Notes.</h1>
-            <p>High-precision preparation for the **Irish Junior Cycle and Leaving Certificate**. Mapped directly to the official syllabus for absolute performance.</p>
+            <p>Unlock the Distinction/H1 and set your knowledge free onto the exam script.</p>
             <div style="display: flex; gap: 16px; justify-content: center;">
                 <a href="resources.html?type=Revision Note" class="btn-primary" style="padding: 18px 40px; font-size: 1.1rem; text-decoration: none; background: var(--brand-green); box-shadow: var(--glow-saina);">Revision Notes</a>
                 <a href="resources.html?type=Past Paper" class="btn-outline" style="padding: 18px 40px; font-size: 1.1rem; text-decoration: none; border: 2.5px solid var(--text-primary);">Topical Past Papers</a>
             </div>
         </div>
     </section>
+    
+    <section class="practice-merit">
+        <div class="practice-content roll-in">
+            <h2><span class="marker-title">Practice with Purpose</span></h2>
+            <p>Our topical past papers and comprehensive revision notes are designed to refine your technique, calibrate your timing, and ensure absolute syllabus mastery. Because <strong>perfect practice makes perfect</strong>.</p>
+        </div>
+    </section>
 
     <section class="subject-explore" id="subject-section">
         <div style="text-align: center; margin-bottom: 80px; padding: 0 24px;" class="roll-in" id="explore-header">
             <h2 style="font-size: 2.8rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;">Unified Syllabus Coverage</h2>
-            <p style="color: var(--text-secondary); font-size: 1.1rem;">Expertly curated flashcards for every major **Irish State Examination** discipline.</p>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Expertly curated flashcards for every major **State Examination** discipline.</p>
         </div>
         
         <div class="grid-compact roll-in" id="subject-usage-grid" style="transition-delay: 0.2s;"></div>
@@ -160,6 +168,8 @@
         // Render Subject Grid
         function renderSubjectBoxes() {
             const USAGE_MAP = {
+                gaeilge: "Oral, aural, and written proficiency in Gaeilge.",
+                english: "Literary analysis, comparative studies, and functional writing.",
                 biology: "Master cell diagrams and metabolic pathways.",
                 chemistry: "Memorize organic mechanisms and molar equations.",
                 physics: "Drill kinematics formulae and particle decay.",
@@ -178,7 +188,7 @@
                 const box = document.createElement('div');
                 box.className = 'subject-box';
                 box.innerHTML = `
-                    <div class="usage-tag">Ireland: ${sub.name}</div>
+                    <div class="usage-tag">${sub.name}</div>
                     <h3>${sub.name}</h3>
                     <p>${sub.desc}</p>
                     <div style="border-top: 1px solid #efefef; padding-top: 16px; font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">

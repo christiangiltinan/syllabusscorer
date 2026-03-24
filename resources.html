@@ -62,6 +62,43 @@
         .btn-download:hover { background: var(--text-primary); color: #fff; }
 
         .empty-state { grid-column: 1/-1; padding: 100px; text-align: center; color: var(--text-tertiary); font-weight: 700; }
+
+        /* PDF MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #fff; width: 100%; max-width: 1200px; height: 90vh;
+            border-radius: 28px; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.4); animation: modalSlide 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        @keyframes modalSlide { 
+            from { transform: translateY(40px) scale(0.98); opacity: 0; } 
+            to { transform: translateY(0) scale(1); opacity: 1; } 
+        }
+        .modal-header { 
+            padding: 20px 32px; display: flex; justify-content: space-between; 
+            align-items: center; border-bottom: 1px solid var(--border-light);
+            background: #fff;
+        }
+        .modal-header h2 { font-size: 1.1rem; font-weight: 800; color: var(--text-primary); }
+        .close-btn { 
+            background: var(--bg-accent); border: none; padding: 10px; border-radius: 14px; 
+            cursor: pointer; color: var(--text-primary); transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .close-btn:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
+        .modal-body { flex: 1; background: #525659; position: relative; } /* Standard PDF viewer gray bg */
+        #pdf-frame { width: 100%; height: 100%; border: none; }
+
+        @media (max-width: 768px) {
+            .modal-content { height: 95vh; border-radius: 20px; }
+            .modal-header { padding: 16px 20px; }
+        }
     </style>
 </head>
 <body>
@@ -81,7 +118,7 @@
     <div class="container">
         <div class="hero">
             <h1>Expert Resources & Papers</h1>
-            <p>Syllabus-mapped study materials for the Irish National Curriculum.</p>
+            <p>Syllabus-mapped study materials for the National Curriculum.</p>
         </div>
 
         <div class="filter-section">
@@ -126,6 +163,20 @@
         </div>
 
         <div class="resource-grid" id="resource-container"></div>
+    </div>
+
+    <div id="pdf-modal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Resource Viewer</h2>
+                <button class="close-btn" onclick="closeModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="pdf-frame" src=""></iframe>
+            </div>
+        </div>
     </div>
 
     <script src="js/app.js"></script>
@@ -235,6 +286,9 @@
         }
 
         function viewResource(id, type) {
+            const res = SyllabusScorer.AppData.resources.find(r => r.id === id);
+            if (!res) return;
+
             if (type === 'Revision Note') {
                 if (!SyllabusScorer.AppData.checkResourceLimit()) {
                     alert('Daily limit reached (5 notes). Upgrade to ProStudy for unlimited access!');
@@ -243,7 +297,25 @@
                 }
                 SyllabusScorer.AppData.incrementResourceUsage();
             }
-            alert('Opening: ' + id + ' (Resource simulated)');
+
+            if (res.url && res.url !== '#') {
+                openModal(res.url, res.name);
+            } else {
+                alert('Opening: ' + res.name + ' (Resource simulated)');
+            }
+        }
+
+        function openModal(url, title) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('pdf-frame').src = url;
+            document.getElementById('pdf-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('pdf-modal').style.display = 'none';
+            document.getElementById('pdf-frame').src = '';
+            document.body.style.overflow = 'auto';
         }
 
         function renderResources() {
@@ -276,7 +348,7 @@
                             ${res.chapter ? `<span class="level-tag">• ${res.chapter}</span>` : ''}
                         </div>
                         <h3>${res.name}</h3>
-                        <p>Topic: <strong>${res.topic}</strong>. Syllabus-aligned material for Irish State Exams.</p>
+                        <p>Topic: <strong>${res.topic}</strong>. Syllabus-aligned material for State Exams.</p>
                     </div>
                     <button onclick="viewResource('${res.id}', '${res.type}')" class="btn-download">
                         <span>View Resource</span>
