@@ -2,6 +2,7 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/assets/(.*)", "destination": "/public/assets/$1" },
+    { "source": "/past-papers/gaeilge/(.*)", "destination": "/public/past-papers/gaeilge/$1" },
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }
