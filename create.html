@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Syllabus Cards | SyllabusScorer</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; min-height: 100vh; background: var(--bg-secondary); padding-top: 72px; }
+
+        .stepper { display: flex; justify-content: center; gap: 0; margin: 60px auto 40px; max-width: 640px; }
+        .step-item { display: flex; align-items: center; gap: 12px; color: var(--text-tertiary); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .step-item .num { width: 34px; height: 34px; border-radius: 50%; background: var(--bg-accent); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 900; }
+        .step-item.active { color: var(--text-primary); }
+        .step-item.active .num { background: var(--text-primary); color: #fff; }
+        .step-item.done .num { background: var(--brand-green); color: #fff; }
+        .step-item.done { color: var(--brand-green); }
+        .step-line { width: 60px; height: 2px; background: var(--border-light); margin: 0 16px; align-self: center; }
+        .step-line.done { background: var(--brand-green); }
+
+        .panel { max-width: 800px; margin: 0 auto; padding: 0 24px; display: none; }
+        .panel.active { display: block; }
+        .panel-card { background: #fff; border: 1px solid var(--border-light); border-radius: 24px; padding: 56px; box-shadow: var(--shadow-card); }
+        .panel-card h2 { font-size: 2rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; }
+        .panel-card .subtitle { color: var(--text-secondary); margin-bottom: 40px; font-size: 1.1rem; }
+
+        .subject-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+        .subject-option {
+            padding: 24px; border: 2px solid var(--border-light); border-radius: 16px; cursor: pointer;
+            text-align: center; transition: all 0.2s ease; background: #fff;
+        }
+        .subject-option:hover { transform: translateY(-4px); border-color: var(--text-secondary); }
+        .subject-option.selected { border-color: var(--brand-green); background: var(--brand-green-light); }
+        .subject-option h4 { font-size: 1.1rem; font-weight: 800; }
+
+        .input-pill { padding: 14px 20px; border: 1.5px solid var(--border-light); border-radius: 12px; width: 100%; font-family: inherit; font-size: 1rem; margin-top: 10px; }
+        .input-pill:focus { border-color: var(--brand-green); outline: none; }
+        .input-pill:focus { border-color: var(--brand-green); outline: none; }
+        /* ProStudy Dropdown */
+        .pro-dropdown { position: relative; display: inline-block; cursor: pointer; }
+        .pro-btn { color: var(--brand-green); font-weight: 800; display: flex; align-items: center; gap: 4px; padding: 10px 16px; min-width: 120px; }
+        .pro-content { 
+            display: none; position: absolute; top: 100%; left: 0; 
+            background: #fff; min-width: 180px; border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-light);
+            padding: 8px; z-index: 2000; margin-top: 4px;
+        }
+        .pro-dropdown:hover .pro-content { display: block; animation: slideUp 0.2s ease; }
+        .pro-content a { 
+            display: block; padding: 12px 16px; border-radius: 10px;
+            color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 700;
+            transition: all 0.2s;
+        }
+        .pro-content a:hover { background: var(--bg-accent); color: var(--brand-green); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <div class="nav-inner">
+            <div class="logo-ss" onclick="location.href='index.html'">
+                <span class="s-hilite">S</span>yllabus<span class="s-hilite">S</span>corer
+            </div>
+            <nav class="nav-links">
+                <div class="pro-dropdown">
+                    <div class="pro-btn">ProStudy <span style="font-size: 0.6rem;">▼</span></div>
+                    <div class="pro-content">
+                        <a href="dashboard.html">Free Cards</a>
+                        <a href="plans.html">Paid Plans</a>
+                    </div>
+                </div>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="create.html" class="nav-link active">Custom Cards</a>
+                <a href="create_ai.html" class="nav-link" style="color: var(--brand-green); font-weight: 800;">AI Mode</a>
+                <a href="dashboard.html" class="btn-primary" style="text-decoration: none; padding: 10px 20px; font-size: 0.9rem;">Library</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="stepper">
+        <div class="step-item active" id="step1-indicator"><div class="num">1</div> Subject</div>
+        <div class="step-line" id="line1"></div>
+        <div class="step-item" id="step2-indicator"><div class="num">2</div> Chapter</div>
+        <div class="step-line" id="line2"></div>
+        <div class="step-item" id="step3-indicator"><div class="num">3</div> Cards</div>
+    </div>
+
+    <div class="panel active" id="panel-1">
+        <div class="panel-card">
+            <h2>Select Subject</h2>
+            <p class="subtitle">Assign these cards to a specific syllabus discipline.</p>
+            <div class="subject-grid" id="subject-grid"></div>
+            <div style="margin-top: 40px; display: flex; justify-content: flex-end;">
+                <button class="btn-primary" id="btn-next-1" disabled onclick="goToStep(2)" style="background: var(--brand-green);">Continue →</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel" id="panel-2">
+        <div class="panel-card">
+            <h2>Chapter Mapping</h2>
+            <p class="subtitle">Organize your cards by specific syllabus chapter.</p>
+            <input type="text" class="input-pill" id="chapter-input" placeholder="e.g. Chapter 4: Organic Chemistry">
+            <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                <button class="btn-outline" onclick="goToStep(1)" style="padding: 12px 24px; border: 2px solid #000; border-radius: 12px; font-weight: 800;">Back</button>
+                <button class="btn-primary" onclick="goToStep(3)" style="background: var(--brand-green);">Enter Data →</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel" id="panel-3">
+        <div class="panel-card">
+            <h2>Card Studio</h2>
+            <p class="subtitle">Draft your syllabus precision cards below.</p>
+            <div id="card-list" style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 24px;"></div>
+            <button class="btn-outline" onclick="addCardField()" style="width: 100%; padding: 16px; border: 2px dashed var(--border-light); border-radius: 14px; color: var(--text-secondary); font-weight: 700;">+ Add Another Segment</button>
+            <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                <button class="btn-outline" onclick="goToStep(2)" style="padding: 12px 24px; border: 2px solid #000; border-radius: 12px; font-weight: 800;">Back</button>
+                <button class="btn-primary" onclick="saveAll()" style="background: var(--brand-green);">Finalize Deck</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        let selectedSubject = null;
+        let cards = [{ front: '', back: '' }];
+
+        function init() {
+            const grid = document.getElementById('subject-grid');
+            SyllabusScorer.SUBJECTS.forEach(sub => {
+                const opt = document.createElement('div');
+                opt.className = 'subject-option';
+                opt.innerHTML = `<h4>${sub.name}</h4><p style="font-size:0.75rem; color:var(--text-secondary);">${sub.desc}</p>`;
+                opt.onclick = () => {
+                    selectedSubject = sub.id;
+                    document.querySelectorAll('.subject-option').forEach(el => el.classList.toggle('selected', el === opt));
+                    document.getElementById('btn-next-1').disabled = false;
+                };
+                grid.appendChild(opt);
+            });
+        }
+
+        function addCardField() { cards.push({ front: '', back: '' }); renderCards(); }
+        function renderCards() {
+            const list = document.getElementById('card-list');
+            list.innerHTML = cards.map((c, i) => `
+                <div style="padding:24px; border:1px solid var(--border-light); border-radius:16px;">
+                    <div style="font-size:0.75rem; font-weight:900; margin-bottom:12px; color:var(--text-tertiary);">SEGMENT ${i+1}</div>
+                    <textarea placeholder="Front side..." style="width:100%; padding:14px; border-radius:10px; border:1.5px solid var(--border-light); margin-bottom:12px; font-family:inherit;" oninput="cards[${i}].front = this.value">${c.front}</textarea>
+                    <textarea placeholder="Back side..." style="width:100%; padding:14px; border-radius:10px; border:1.5px solid var(--border-light); font-family:inherit;" oninput="cards[${i}].back = this.value">${c.back}</textarea>
+                </div>
+            `).join('');
+        }
+
+        function saveAll() {
+            const valid = cards.filter(c => c.front.trim() || c.back.trim());
+            const newDeck = {
+                id: FlashSaina.Utils.generateId(),
+                title: document.getElementById('chapter-input').value || 'Unlabeled Chapter',
+                subject: selectedSubject,
+                chapter: document.getElementById('chapter-input').value || 'General',
+                cards: valid.map(c => ({...c, srs: { interval: 0, repetitions: 0, easeFactor: 2.5 } })),
+                lastReview: null
+            };
+            FlashSaina.AppData.decks.push(newDeck);
+            FlashSaina.AppData.save();
+            location.href = 'dashboard.html';
+        }
+
+        function goToStep(s) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${s}`));
+            if (s === 3) renderCards();
+        }
+        init();
+    </script>
+</body>
+</html>

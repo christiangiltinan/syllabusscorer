@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zero-G Studio | SyllabusScorer</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; padding-top: 72px; }
+
+        .studio-main { flex: 1; display: flex; overflow: hidden; }
+
+        .pane-editor {
+            flex: 1; padding: 40px; border-right: 1px solid var(--border-light);
+            overflow-y: auto; background: var(--bg-primary);
+        }
+
+        .pane-preview {
+            flex: 1; padding: 40px; background: var(--bg-secondary);
+            display: flex; justify-content: center; align-items: center; position: relative;
+        }
+
+        .card-editor-item { margin-bottom: 24px; padding: 32px; position: relative; border: 1px solid var(--border-light); border-radius: 20px; }
+        .card-number {
+            position: absolute; top: 12px; right: 24px; font-size: 0.75rem; font-weight: 900; color: var(--text-tertiary); letter-spacing: 1px;
+        }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block; font-size: 0.7rem; color: var(--text-tertiary); margin-bottom: 8px;
+            text-transform: uppercase; letter-spacing: 1px; font-weight: 800;
+        }
+
+        textarea {
+            width: 100%; border: 1.5px solid var(--border-light); border-radius: 12px;
+            color: var(--text-primary); padding: 16px; font-size: 1rem; resize: vertical;
+            min-height: 80px; font-family: 'Inter', sans-serif; line-height: 1.5;
+        }
+        textarea:focus { outline: none; border-color: var(--brand-green); }
+
+        .preview-card {
+            width: 340px; height: 460px; position: relative; transform-style: preserve-3d;
+            transition: transform 0.6s var(--spring-easing); cursor: pointer;
+        }
+        .preview-card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute; width:100%; height:100%; backface-visibility:hidden;
+            display:flex; flex-direction:column; justify-content:center; align-items:center;
+            padding:40px; text-align:center; font-size:1.4rem; border-radius:24px; line-height:1.4;
+            box-shadow: var(--shadow-card-hover); border: 1px solid var(--border-light);
+        }
+        .card-front { background: #fff; }
+        .card-back { transform: rotateY(180deg); background: #fff; border: 2px solid var(--brand-green); }
+
+        .studio-header {
+            padding: 16px 32px; background: #fff; border-bottom: 1px solid var(--border-light);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <div class="nav-inner">
+            <div class="logo-ss" onclick="location.href='index.html'">
+                <span class="s-hilite">S</span>yllabus<span class="s-hilite">S</span>corer
+            </div>
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="create.html" class="nav-link">Custom Cards</a>
+                <a href="create_ai.html" class="nav-link" style="color: var(--brand-green); font-weight: 800;">AI Mode</a>
+                <a href="dashboard.html" class="btn-primary" style="text-decoration: none; padding: 10px 20px; font-size: 0.9rem;">Library</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="studio-header">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <h2 id="deck-title" style="font-size: 1.2rem; font-weight: 900;"></h2>
+            <span id="deck-subject-badge" class="subject-badge"></span>
+        </div>
+        <button class="btn-primary" onclick="saveDeck()" style="background: var(--brand-green);">Save Evolution</button>
+    </div>
+
+    <main class="studio-main">
+        <div class="pane-editor" id="editor-container"></div>
+        <div class="pane-preview">
+            <div class="preview-card" id="preview-card" onclick="this.classList.toggle('flipped')">
+                <div class="card-face card-front" id="prev-front">Front</div>
+                <div class="card-face card-back" id="prev-back">Back</div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/app.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const deckId = urlParams.get('id');
+        let currentDeck = FlashSaina.AppData.decks.find(d => d.id === deckId);
+
+        if (currentDeck) {
+            const sub = FlashSaina.Utils.getSubject(currentDeck.subject);
+            document.getElementById('deck-title').textContent = currentDeck.title;
+            const badge = document.getElementById('deck-subject-badge');
+            badge.textContent = sub.name;
+            badge.style.background = sub.color + '10';
+            badge.style.color = sub.color;
+            badge.style.border = `1px solid ${sub.color}30`;
+
+            function renderEditor() {
+                const container = document.getElementById('editor-container');
+                container.innerHTML = currentDeck.cards.map((c, i) => `
+                    <div class="card-editor-item">
+                        <div class="card-number">#{${i+1}}</div>
+                        <div class="input-group">
+                            <label>Syllabus Segment (Front)</label>
+                            <textarea oninput="updateCard(${i}, 'front', this.value)" onfocus="showPreview(${i})">${c.front}</textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>Synthesis (Back)</label>
+                            <textarea oninput="updateCard(${i}, 'back', this.value)" onfocus="showPreview(${i})">${c.back}</textarea>
+                        </div>
+                    </div>
+                `).join('') + `<button onclick="addCard()" style="width:100%; padding:20px; border:2px dashed var(--border-light); border-radius:16px; color:var(--text-secondary); font-weight:700; cursor:pointer;">+ Add New Card</button>`;
+            }
+
+            function updateCard(idx, side, val) { 
+                currentDeck.cards[idx][side] = val; 
+                showPreview(idx); 
+            }
+            function showPreview(idx) {
+                document.getElementById('prev-front').textContent = currentDeck.cards[idx].front || 'Front';
+                document.getElementById('prev-back').textContent = currentDeck.cards[idx].back || 'Back';
+            }
+            function saveDeck() { FlashSaina.AppData.save(); alert('Evolution Saved.'); }
+            function addCard() { currentDeck.cards.push({front:'', back:''}); renderEditor(); }
+
+            renderEditor();
+        }
+    </script>
+</body>
+</html>

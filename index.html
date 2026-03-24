@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyllabusScorer | Master the Real Answers</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; padding-top: 72px; }
+
+        .hero {
+            min-height: calc(100vh - 72px);
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; position: relative; overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #fff 0%, var(--bg-secondary) 100%);
+        }
+
+        .hero-content { max-width: 900px; z-index: 10; padding: 0 24px; }
+
+        .hero h1 {
+            font-size: 5.5rem; font-weight: 900; letter-spacing: -3px; line-height: 0.95;
+            margin-bottom: 2rem; color: var(--text-primary);
+        }
+
+        /* Hero Text Styles: Highlighter Effect */
+        .hero h1 em { font-style: normal; color: var(--brand-green); }
+        .underline-target { position: relative; display: inline-block; }
+        .underline-target::after {
+            content: ''; position: absolute; bottom: 0.15em; left: -2px;
+            width: var(--highlight-width, 100%); height: 0.7em; 
+            background: var(--brand-green);
+            opacity: 0.35; z-index: -1; 
+            border-radius: 4px;
+            transform: rotate(-1deg);
+        }
+        /* Floating Decorations */
+        .floating-element {
+            position: absolute; color: var(--text-tertiary); opacity: 0.15;
+            font-size: 0.9rem; font-weight: 700; pointer-events: none;
+            animation: float 12s infinite ease-in-out; white-space: nowrap;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+            33% { transform: translateY(-30px) translateX(15px) rotate(5deg); }
+            66% { transform: translateY(20px) translateX(-10px) rotate(-3deg); }
+        }
+        .sym-1 { top: 20%; left: 10%; animation-delay: 0s; }
+        .sym-2 { top: 15%; right: 12%; animation-delay: 2s; }
+        .sym-3 { bottom: 25%; left: 15%; animation-delay: 4s; }
+        .sym-4 { bottom: 18%; right: 18%; animation-delay: 1s; }
+        .fact-1 { top: 35%; right: 5%; font-size: 0.75rem; animation-delay: 3s; }
+        .fact-2 { bottom: 40%; left: 5%; font-size: 0.75rem; animation-delay: 5s; }
+
+        .hero p { font-size: 1.5rem; color: var(--text-secondary); max-width: 650px; margin: 0 auto 3.5rem; }
+
+        /* Subject Box Grid */
+        .subject-explore { padding: 120px 0; background: #fff; border-top: 1px solid var(--border-light); }
+        .grid-compact {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px; max-width: 1240px; margin: 0 auto; padding: 0 24px;
+        }
+        .subject-box {
+            padding: 40px; background: var(--bg-secondary); border-radius: 20px;
+            transition: all 0.4s ease; border: 1px solid transparent;
+        }
+        .subject-box:hover {
+            background: #fff; border-color: var(--brand-green);
+            transform: translateY(-8px); box-shadow: var(--shadow-card-hover);
+        }
+        .subject-box h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; }
+        .subject-box p { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+        .usage-tag { font-size: 0.75rem; font-weight: 700; color: var(--brand-green); text-transform: uppercase; }
+
+        /* Roll-in Animation */
+        .roll-in {
+            opacity: 0; transform: translateX(-60px);
+            transition: all 1.2s var(--spring-easing);
+            will-change: transform, opacity;
+        }
+        .rolled-in { opacity: 1; transform: translateX(0); }
+        /* ProStudy Dropdown */
+        .pro-dropdown { position: relative; display: inline-block; cursor: pointer; }
+        .pro-btn { color: var(--brand-green); font-weight: 800; display: flex; align-items: center; gap: 4px; padding: 10px 16px; }
+        .pro-content { 
+            display: none; position: absolute; top: 100%; left: 0; 
+            background: #fff; min-width: 180px; border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid var(--border-light);
+            padding: 8px; z-index: 2000; margin-top: 4px;
+        }
+        .pro-dropdown:hover .pro-content { display: block; animation: slideUp 0.2s ease; }
+        .pro-content a { 
+            display: block; padding: 12px 16px; border-radius: 10px;
+            color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 700;
+            transition: all 0.2s;
+        }
+        .pro-content a:hover { background: var(--bg-accent); color: var(--brand-green); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="reveal">
+    <header class="top-nav">
+        <div class="nav-inner">
+            <div class="logo-ss" onclick="location.href='index.html'">
+                <span class="s-hilite">S</span>yllabus<span class="s-hilite">S</span>corer
+            </div>
+            <nav class="nav-links">
+                <div class="pro-dropdown">
+                    <div class="pro-btn">ProStudy <span style="font-size: 0.6rem;">▼</span></div>
+                    <div class="pro-content">
+                        <a href="dashboard.html">Free Cards</a>
+                        <a href="plans.html">Paid Plans</a>
+                    </div>
+                </div>
+                <a href="resources.html" class="nav-link">Study Hub</a>
+                <a href="dashboard.html" class="nav-link">Flashcards</a>
+                <a href="create_ai.html" class="nav-link" style="color: var(--brand-green); font-weight: 800;">AI Mode</a>
+                <a href="resources.html" class="btn-primary" style="text-decoration: none; padding: 10px 24px; font-size: 0.85rem;">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="hero-section">
+        <div class="orbit-container" id="orbit-container"></div>
+        
+        <!-- Floating Symbols & Facts -->
+        <div class="floating-element sym-1">Σ (Summation)</div>
+        <div class="floating-element sym-2">Δ (Delta)</div>
+        <div class="floating-element sym-3">⚛ (Atom)</div>
+        <div class="floating-element sym-4">Ω (Ohm)</div>
+        <div class="fact-1 floating-element">Mitochondria is the powerhouse of the cell. (LC Bio)</div>
+        <div class="fact-2 floating-element">Irish State Exams: Junior Cycle & Leaving Cert.</div>
+
+        <div class="hero-content">
+            <h1>Master <span class="underline-target">Topical</span> Past Papers & Revision Notes.</h1>
+            <p>High-precision preparation for the **Irish Junior Cycle and Leaving Certificate**. Mapped directly to the official syllabus for absolute performance.</p>
+            <div style="display: flex; gap: 16px; justify-content: center;">
+                <a href="resources.html?type=Revision Note" class="btn-primary" style="padding: 18px 40px; font-size: 1.1rem; text-decoration: none; background: var(--brand-green); box-shadow: var(--glow-saina);">Revision Notes</a>
+                <a href="resources.html?type=Past Paper" class="btn-outline" style="padding: 18px 40px; font-size: 1.1rem; text-decoration: none; border: 2.5px solid var(--text-primary);">Topical Past Papers</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="subject-explore" id="subject-section">
+        <div style="text-align: center; margin-bottom: 80px; padding: 0 24px;" class="roll-in" id="explore-header">
+            <h2 style="font-size: 2.8rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 12px;">Unified Syllabus Coverage</h2>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">Expertly curated flashcards for every major **Irish State Examination** discipline.</p>
+        </div>
+        
+        <div class="grid-compact roll-in" id="subject-usage-grid" style="transition-delay: 0.2s;"></div>
+    </section>
+
+    <script src="js/app.js"></script>
+    <script>
+        const orbitContainer = document.getElementById('orbit-container');
+        const usageGrid = document.getElementById('subject-usage-grid');
+
+        // Render Subject Grid
+        function renderSubjectBoxes() {
+            const USAGE_MAP = {
+                biology: "Master cell diagrams and metabolic pathways.",
+                chemistry: "Memorize organic mechanisms and molar equations.",
+                physics: "Drill kinematics formulae and particle decay.",
+                mathematics: "Practice integration steps and trig identities.",
+                mechanics: "Understand SUVAT applications and energy systems.",
+                statistics: "Internalize distribution models and test logic.",
+                geography: "Learn case studies and environmental dynamics.",
+                history: "Analyze primary sources and 20th century geopolitics.",
+                computer_science: "Debug algorithms and optimize logic circuits.",
+                psychology: "Evaluate social theories and case study ethics.",
+                environmental_management: "Synthesize sustainable policies and ecosystems."
+            };
+
+            // Only show first 3 subjects as requested
+            SyllabusScorer.SUBJECTS.slice(0, 3).forEach(sub => {
+                const box = document.createElement('div');
+                box.className = 'subject-box';
+                box.innerHTML = `
+                    <div class="usage-tag">Ireland: ${sub.name}</div>
+                    <h3>${sub.name}</h3>
+                    <p>${sub.desc}</p>
+                    <div style="border-top: 1px solid #efefef; padding-top: 16px; font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">
+                        Usage: ${USAGE_MAP[sub.id]}
+                    </div>
+                `;
+                usageGrid.appendChild(box);
+            });
+        }
+
+        function createOrbitingCards() {
+            // Pick a few cards from the seed
+            const cards = [
+                { s: 'Biology', q: 'Define Osmosis', a: 'Water potential movement' },
+                { s: 'Physics', q: 'F = ma', a: 'Force = mass x acceleration' },
+                { s: 'Chemistry', q: 'Isotope', a: 'Same protons, different neutrons' },
+                { s: 'Math', q: 'd/dx sin(x)', a: 'cos(x)' },
+                { s: 'Mechanics', q: 'SUVAT v²', a: 'u² + 2as' }
+            ];
+
+            cards.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'orbiting-card';
+                cardEl.innerHTML = `
+                    <div style="position: absolute; width:100%; height:100%; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; padding:12px;">
+                        <div>
+                            <div style="font-size:0.6rem; color:var(--brand-green); font-weight:800; text-transform:uppercase; margin-bottom:6px;">${card.s}</div>
+                            ${card.q}
+                        </div>
+                    </div>
+                    <div style="position: absolute; width:100%; height:100%; backface-visibility:hidden; transform:rotateY(180deg); display:flex; align-items:center; justify-content:center; padding:12px; background:var(--brand-green-light); color:var(--brand-green);">
+                        ${card.a}
+                    </div>
+                `;
+                const radius = 400 + (index * 40);
+                const duration = 22 + (index * 6);
+                cardEl.style.animation = `orbit-fly ${duration}s linear infinite, orbit-flip 7s ${index * -1.5}s infinite ease-in-out`;
+                orbitContainer.appendChild(cardEl);
+            });
+        }
+
+        // Scroll Animation for Live Highlighter
+        const underlineTarget = document.querySelector('.underline-target');
+        window.addEventListener('scroll', () => {
+            const hero = document.getElementById('hero-section');
+            const rect = hero.getBoundingClientRect();
+            const viewHeight = window.innerHeight;
+            
+            // Calculate how far we've scrolled into the hero
+            // We want the highlight to start at scroll 0 and finish by the time the hero is half scrolled away
+            const scrollDistance = window.scrollY;
+            const completionPoint = viewHeight * 0.4;
+            
+            let progress = 100 - (scrollDistance / completionPoint) * 100;
+            if (progress > 100) progress = 100;
+            if (progress < 0) progress = 0;
+            
+            underlineTarget.style.setProperty('--highlight-width', `${progress}%`);
+            
+            // Toggle reveal class for other potential animations
+            if (rect.top > -200) {
+                document.body.classList.add('reveal');
+            } else {
+                document.body.classList.remove('reveal');
+            }
+        });
+
+        // Intersection Observer for Roll-in
+        const observerOptions = { threshold: 0.15 };
+        const rollInObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('rolled-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.roll-in').forEach(el => rollInObserver.observe(el));
+
+        renderSubjectBoxes();
+        createOrbitingCards();
+    </script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Generation | SyllabusScorer</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Outfit:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; padding-top: 100px; background: var(--bg-secondary); }
+        .create-container { max-width: 600px; margin: 0 auto; padding: 40px; background: #fff; border-radius: 32px; border: 1px solid var(--border-light); }
+        h1 { font-size: 2.2rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -1px; }
+        .subtitle { color: var(--text-secondary); margin-bottom: 40px; font-weight: 500; }
+        
+        .form-group { margin-bottom: 24px; }
+        label { display: block; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 8px; letter-spacing: 0.5px; }
+        select, input { width: 100%; padding: 16px; border-radius: 12px; border: 1.5px solid var(--border-light); font-family: inherit; font-size: 1rem; font-weight: 600; }
+        select:focus, input:focus { outline: none; border-color: var(--brand-green); }
+
+        .btn-generate { 
+            width: 100%; padding: 20px; border-radius: 16px; border: none; 
+            background: var(--text-primary); color: #fff; font-weight: 800; font-size: 1.1rem; 
+            cursor: pointer; margin-top: 20px; transition: all 0.2s;
+        }
+        .btn-generate:hover { background: #000; box-shadow: var(--glow-saina); transform: translateY(-2px); }
+        .btn-generate:disabled { background: var(--text-tertiary); cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .usage-info { 
+            margin-top: 24px; padding: 16px; background: var(--bg-accent); border-radius: 12px;
+            display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700;
+        }
+
+        /* Modal Styles */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 3000;
+        }
+        .modal-overlay.visible { display: flex; }
+        .premium-modal { 
+            background: #fff; padding: 48px; border-radius: 32px; max-width: 500px; width: 90%; 
+            text-align: center; position: relative; animation: modalFloat 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalFloat { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .price-option { 
+            padding: 24px; border: 2px solid var(--border-light); border-radius: 20px; margin-bottom: 16px; 
+            cursor: pointer; transition: all 0.2s; text-align: left; position: relative;
+        }
+        .price-option.active { border-color: var(--brand-green); background: #f0fdf4; }
+        .price-val { font-size: 1.5rem; font-weight: 900; }
+        .price-label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; }
+
+        .btn-auth { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: all 0.2s; }
+    </style>
+</head>
+<body>
+    <header class="top-nav">
+        <div class="nav-inner">
+            <div class="logo-ss" onclick="location.href='index.html'">
+                <span class="s-hilite">S</span>yllabus<span class="s-hilite">S</span>corer
+            </div>
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="resources.html" class="nav-link">Resources</a>
+                <a href="create.html" class="nav-link">Custom Cards</a>
+                <a href="create_ai.html" class="nav-link active" style="color: var(--brand-green); font-weight: 800;">AI Mode</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="create-container">
+        <h1>AI Syllabus Mastery</h1>
+        <p class="subtitle">Generate high-precision study cards for the Irish curriculum in seconds.</p>
+        
+        <div class="usage-info">
+            <span id="usage-text">Usage: 0/10 cards this week</span>
+            <a href="plans.html" style="color: var(--brand-green); text-decoration: none;">Upgrade to Pro</a>
+        </div>
+
+        <form id="ai-form" style="margin-top: 32px;">
+            <div class="form-group">
+                <label>Educational System</label>
+                <select id="system-select" onchange="updateSubjects()">
+                    <option value="Junior Cycle">Junior Cycle</option>
+                    <option value="Leaving Cert">Leaving Cert</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Subject</label>
+                <select id="subject-select" onchange="updateLevels()"></select>
+            </div>
+            <div class="form-group">
+                <label>Examination Level</label>
+                <select id="level-select"></select>
+            </div>
+            <div class="form-group">
+                <label>Specific Chapter or Topic</label>
+                <input type="text" id="topic-input" placeholder="e.g. Plate Tectonics or Cell Mitosis" required>
+            </div>
+            <button type="submit" class="btn-generate" id="gen-btn">Generate Mastery Cards</button>
+        </form>
+    </div>
+
+    <!-- Pricing Modal -->
+    <div class="modal-overlay" id="premium-modal">
+        <div class="premium-modal">
+            <h2 style="font-size: 2rem; font-weight: 900; margin-bottom: 12px; letter-spacing: -1px;">Weekly Limit Reached</h2>
+            <p style="color:var(--text-secondary); margin-bottom: 32px;">You've used your 10 free AI cards for this week. Upgrade to SyllabusScorer <strong style="color: #000;">Pro</strong> for unlimited syllabus-mapped generations.</p>
+            
+            <div class="price-option" onclick="selectPlan(this)">
+                <div class="price-val">€1.99 <span style="font-size: 0.9rem; color: var(--text-tertiary);">/ month</span></div>
+                <div class="price-label">Flexible monthly access</div>
+            </div>
+            <div class="price-option active" onclick="selectPlan(this)">
+                <div class="price-val">€14.99 <span style="font-size: 0.9rem; color: var(--text-tertiary);">/ year</span></div>
+                <div class="price-label">Save 35% with annual billing</div>
+                <div style="position: absolute; top: 12px; right: 12px; background: var(--brand-green); color: white; padding: 4px 10px; border-radius: 50px; font-size: 0.6rem; font-weight: 900;">BEST VALUE</div>
+            </div>
+
+            <button class="btn-auth" style="background: var(--brand-green); margin-top: 24px;" onclick="location.href='plans.html'">Upgrade to Pro Mastery</button>
+            <button class="btn-auth" style="background: transparent; border: 1px solid var(--border-light); color: var(--text-tertiary); margin-top: 12px; font-size: 0.8rem; font-weight: 800; cursor: pointer;" onclick="dismissLimit()">Dismiss and continue with free version</button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        const form = document.getElementById('ai-form');
+        const usageText = document.getElementById('usage-text');
+        const genBtn = document.getElementById('gen-btn');
+        const sysSelect = document.getElementById('system-select');
+        const subSelect = document.getElementById('subject-select');
+        const lvlSelect = document.getElementById('level-select');
+
+        function init() {
+            updateSubjects();
+            updateUsageUI();
+        }
+
+        function updateSubjects() {
+            const system = sysSelect.value;
+            subSelect.innerHTML = '';
+            
+            SyllabusScorer.SUBJECTS.forEach(sub => {
+                if (sub.levels[system]) {
+                    const opt = document.createElement('option');
+                    opt.value = sub.id;
+                    opt.textContent = sub.name;
+                    subSelect.appendChild(opt);
+                }
+            });
+            updateLevels();
+        }
+
+        function updateLevels() {
+            const system = sysSelect.value;
+            const subId = subSelect.value;
+            const sub = SyllabusScorer.Utils.getSubject(subId);
+            
+            lvlSelect.innerHTML = '';
+            const tiers = sub.levels[system] || [];
+            tiers.forEach(tier => {
+                const opt = document.createElement('option');
+                opt.value = tier;
+                opt.textContent = tier === 'HL' ? 'Higher Level (HL)' : 
+                                 tier === 'OL' ? 'Ordinary Level (OL)' : 
+                                 tier === 'FL' ? 'Foundation Level (FL)' : 'Common Level (CL)';
+                lvlSelect.appendChild(opt);
+            });
+        }
+
+        function updateUsageUI() {
+            const count = SyllabusScorer.AppData.aiUsage.count;
+            usageText.textContent = `Usage: ${count}/10 cards this week`;
+            if (count >= 10 && !SyllabusScorer.AppData.isPremium) {
+                genBtn.disabled = true;
+                genBtn.textContent = 'Free Limit Reached';
+                genBtn.style.background = 'var(--text-tertiary)';
+                usageText.style.color = 'var(--brand-red)';
+            }
+        }
+
+        function dismissLimit() {
+            toggleModal(false);
+            updateUsageUI();
+            alert('AI mode is now locked until next week. You can still create manual cards in the "Custom Cards" section.');
+        }
+
+        function toggleModal(show) {
+            document.getElementById('premium-modal').classList.toggle('visible', show);
+        }
+
+        function selectPlan(el) {
+            document.querySelectorAll('.price-option').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const count = SyllabusScorer.AppData.aiUsage.count;
+            if (count >= 10 && !SyllabusScorer.AppData.isPremium) {
+                toggleModal(true);
+                return;
+            }
+
+            const system = sysSelect.value;
+            const subject = subSelect.value;
+            const level = lvlSelect.value;
+            const topic = document.getElementById('topic-input').value;
+
+            genBtn.disabled = true;
+            genBtn.textContent = 'Mastering topics via AI...';
+
+            setTimeout(() => {
+                const newCards = SyllabusScorer.MockAI.generateCards(subject, system, level);
+                const deck = {
+                    id: SyllabusScorer.Utils.generateId(),
+                    title: `${topic} (${system} ${level})`,
+                    subject: subject,
+                    system: system,
+                    level: level,
+                    chapter: 'AI Generated',
+                    cards: newCards,
+                    lastReview: null
+                };
+                SyllabusScorer.AppData.decks.push(deck);
+                SyllabusScorer.AppData.save();
+                
+                location.href = `study.html?id=${deck.id}`;
+            }, 1800);
+        });
+
+        init();
+    </script>
+</body>
+</html>
